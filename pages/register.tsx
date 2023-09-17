@@ -6,6 +6,7 @@ import { UserResponse } from 'types';
 import { setUserLogged } from 'store/reducers/user';
 import { registerUser } from 'utils/server';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 const RegisterPage = () => {
   const { register, handleSubmit, errors } = useForm();
@@ -17,7 +18,20 @@ const RegisterPage = () => {
   }
   const onSubmit = async (data: any) => {
     const { email, password, firstName, lastName } = data;
-    const res = await registerUser(email, firstName, lastName, password);
+    let res;
+  
+    try {
+      res = await registerUser(email, firstName, lastName, password);
+      // @ts-ignore:next-line
+      const errorMessage = res?.errorMessage;
+
+      if (errorMessage) {
+        return toast.error(errorMessage);
+      }
+    } catch (error) {
+      // @ts-ignore:next-line
+      return toast.error(error?.errorMessage);
+    }
     loginUser(res);
     router.push('/products');
   };

@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { setUserLogged } from 'store/reducers/user';
 import { UserResponse } from 'types';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 type LoginMail = {
   email: string;
@@ -22,7 +23,21 @@ const LoginPage = () => {
   }
   const onSubmit = async (data: LoginMail) => {
     const { email, password } = data;
-    const res = await login(email, password);
+    let res;
+
+    try {
+      res = await login(email, password);
+      // @ts-ignore:next-line
+      const errorMessage = res?.errorMessage;
+
+      if (errorMessage) {
+        return toast.error(errorMessage);
+      }
+    } catch (error) {
+      // @ts-ignore:next-line
+      return toast.error(error?.errorMessage);
+    }
+    // @ts-ignore:next-line
     loginUser(res);
     router.push('/products');
   };
