@@ -1,12 +1,18 @@
 import Layout from '../../layouts/Main';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CheckoutStatus from '../../components/checkout-status';
 import CheckoutItems from '../../components/checkout/items';
 import { RootState } from 'store';
 import Link from 'next/link';
+import { postTransaction } from 'utils/server';
+import { useRouter } from 'next/router';
+import { emptyCart } from 'store/reducers/cart';
 
 const CheckoutPage = () => {
-
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const productIds = useSelector((state: RootState) => state.cart.cartItems.map((item) => item.id));
+  const { token } = useSelector((state: RootState) => state.user);
   const priceTotal = useSelector((state: RootState) => {
     const cartItems = state.cart.cartItems;
     let totalPrice = 0;
@@ -15,7 +21,23 @@ const CheckoutPage = () => {
     }
 
     return totalPrice;
-  })
+  });
+
+  const handlePayment = async () => {
+    let response;
+
+    try {
+      response = await postTransaction(productIds, String(token));
+    } catch (error) {
+      return;
+    }
+    emptyUserCart();
+    router.push('/transaction/' + response.token);
+  }
+
+  const emptyUserCart = () => {
+    dispatch(emptyCart());
+  }
 
   return (
     <Layout>
@@ -75,7 +97,7 @@ const CheckoutPage = () => {
                 <button type="button" className="btn btn--rounded btn--border">Continue shopping</button>
               </Link>
               
-              <button type="button" className="btn btn--rounded btn--yellow">Proceed to payment</button>
+              <button type="button" onClick={handlePayment} className="btn btn--rounded btn--yellow">Proceed to payment</button>
             </div>
           </div>
         </div>
@@ -85,4 +107,4 @@ const CheckoutPage = () => {
 };
 
   
-export default CheckoutPage
+export default CheckoutPage;

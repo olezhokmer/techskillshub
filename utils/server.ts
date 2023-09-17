@@ -1,4 +1,4 @@
-import { CategoryType, UserResponse } from "types";
+import { CategoryType, TransactionProduct, UserResponse } from "types";
 
 export const server = 'http://localhost:3020';
 
@@ -91,4 +91,36 @@ export async function registerUser(
   const data = await response.json();
 
   return data;
+}
+
+export async function postTransaction(
+  productIds: string[],
+  token: string,
+) : Promise<UserResponse> {
+  const payload = {
+    productIds,
+  };
+
+  const response = await fetch(server + '/transaction', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token,
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+
+  return data;
+}
+
+export async function getTransaction(
+  token: string
+) : Promise<TransactionProduct[]> {
+  const response = await fetch(server + '/transaction/' + token, {
+    method: 'GET',
+  });
+  const data = await response.json();
+
+  return data?.products ?? [];
 }

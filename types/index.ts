@@ -43,3 +43,10 @@ export type UserResponse = {
   user: UserType;
   token: string;
 }
+
+export type TransactionProduct = {
+  id: string;
+  name: string;
+  images: string[]
+  fileUrl: string;
+}

@@ -107,7 +107,7 @@ const Header = ({ isErrorPage }: HeaderType) => {
                 <div className="dropdown-content">
                   <Link href="/404"><a>Profile</a></Link>
                   <Link href="/404"><a>Settings</a></Link>
-                  <Link href="/404"><a>Bonuses</a></Link>
+                  <Link href="/404"><a>Purchases</a></Link>
                   <Link href='/products'><a onClick={logOut}>Log Out</a></Link>
                 </div>
               </div>

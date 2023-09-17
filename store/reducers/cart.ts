@@ -33,9 +33,15 @@ const cartSlice = createSlice({
     },
     removeProduct(state, action: PayloadAction<ProductStoreType>) {
       state.cartItems.splice(indexSameProduct(state, action.payload), 1);
+    },
+    emptyCart(state) {
+      return {
+        ...state,
+        cartItems: [],
+      };
     }
   },
 })
 
-export const { addProduct, removeProduct } = cartSlice.actions
+export const { addProduct, removeProduct, emptyCart } = cartSlice.actions
 export default cartSlice.reducer
