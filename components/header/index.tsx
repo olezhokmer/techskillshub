@@ -1,16 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useOnClickOutside from 'use-onclickoutside';
 import Logo from '../../assets/icons/logo';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { RootState } from 'store';
+import { logOutUser } from 'store/reducers/user';
 
 type HeaderType = {
   isErrorPage?: Boolean;
 }
 
 const Header = ({ isErrorPage }: HeaderType) => {
+  const dispatch = useDispatch();
   const router = useRouter();
   const { cartItems } = useSelector((state: RootState)  => state.cart);
   const arrayPaths = ['/'];  
@@ -20,6 +22,7 @@ const Header = ({ isErrorPage }: HeaderType) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const navRef = useRef(null);
   const searchRef = useRef(null);
+  const { user } = useSelector((state: RootState) => state.user);
 
   const headerClass = () => {
     if(window.pageYOffset === 0) {
@@ -48,6 +51,11 @@ const Header = ({ isErrorPage }: HeaderType) => {
     setSearchOpen(false);
   }
 
+
+  const logOut = () => {
+    dispatch(logOutUser());
+  }
+
   // on click outside
   useOnClickOutside(navRef, closeMenu);
   useOnClickOutside(searchRef, closeSearch);
@@ -67,8 +75,7 @@ const Header = ({ isErrorPage }: HeaderType) => {
           </Link>
           <Link href="/guidelines">
             <a>Guidelines</a>
-          </Link>
-          <button className="site-nav__btn"><p>Account</p></button>
+          </Link>     
         </nav>
 
         <div className="site-header__actions">
@@ -87,9 +94,24 @@ const Header = ({ isErrorPage }: HeaderType) => {
               }
             </button>
           </Link>
-          <Link href="/login">
-            <button className="site-header__btn-avatar"><i className="icon-avatar"></i></button>
-          </Link>
+
+
+          {
+            !user
+            ? <Link href="/login">
+                <button className="site-header__btn-avatar"><i className="icon-avatar"></i></button>
+              </Link>
+            : 
+            <div className="dropdown">
+                <a className="dropbtn">{ user.firstName + ' ' + user.lastName}</a>
+                <div className="dropdown-content">
+                  <Link href="/404"><a>Profile</a></Link>
+                  <Link href="/404"><a>Settings</a></Link>
+                  <Link href="/404"><a>Bonuses</a></Link>
+                  <Link href='/products'><a onClick={logOut}>Log Out</a></Link>
+                </div>
+              </div>
+          }
           <button 
             onClick={() => setMenuOpen(true)} 
             className="site-header__btn-menu">

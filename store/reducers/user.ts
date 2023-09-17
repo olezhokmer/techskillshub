@@ -1,6 +1,7 @@
 import { remove } from 'lodash';
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { UserResponse, UserType } from 'types';
 
 type ProductType = {
   id: string;
@@ -14,14 +15,12 @@ type ToggleFavType = {
 }
 
 interface UserSliceTypes {
-  user: any;
-  favProducts: any;
+  user?: UserType;
+  token?: string;
+  favProducts: string[];
 }
 
 const initialState = {
-  user: {
-    name: 'Oleg Merkuriev',
-  },
   favProducts: [],
 } as UserSliceTypes
 
@@ -40,27 +39,17 @@ const userSlice = createSlice({
 
       remove(state.favProducts, id => id === action.payload.id);
     },
-    setUserLogged(state, action: PayloadAction<ProductType>) {
-      const index = state.favProducts.includes(action.payload.id);
-
-      if(!index) {
-        state.favProducts.push(action.payload.id);
-
-        return {
-          ...state,
-          favProducts: state.favProducts
-        };
-      }
-
-      remove(state.favProducts, id => id === action.payload.id);
+    setUserLogged(state, action: PayloadAction<UserResponse>) {
+      const user = action.payload.user;
       
-      return {
-        ...state,
-        favProducts: state.favProducts
-      };
+      state.user = user;
+    },
+    logOutUser(state) {
+      state.user = undefined;
+      state.token = undefined;
     },
   },
 })
 
-export const { toggleFavProduct, setUserLogged } = userSlice.actions
+export const { toggleFavProduct, setUserLogged, logOutUser } = userSlice.actions
 export default userSlice.reducer

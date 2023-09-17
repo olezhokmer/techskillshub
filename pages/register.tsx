@@ -1,7 +1,28 @@
 import Layout from '../layouts/Main';
 import Link from 'next/link';
+import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
+import { UserResponse } from 'types';
+import { setUserLogged } from 'store/reducers/user';
+import { registerUser } from 'utils/server';
+import { useForm } from 'react-hook-form';
 
-const RegisterPage = () => (
+const RegisterPage = () => {
+  const { register, handleSubmit, errors } = useForm();
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const loginUser = (userResponse: UserResponse) => {
+    dispatch(setUserLogged(userResponse));
+  }
+  const onSubmit = async (data: any) => {
+    const { email, password, firstName, lastName } = data;
+    const res = await registerUser(email, firstName, lastName, password);
+    loginUser(res);
+    router.push('/products');
+  };
+
+  return (
   <Layout>
     <section className="form-page">
       <div className="container">
@@ -15,21 +36,63 @@ const RegisterPage = () => (
           <h2 className="form-block__title">Create an account and discover the benefits</h2>
           <p className="form-block__description">Unlock your potential and embark on a journey of endless learning. Dive into a world of knowledge with our IT courses, tailored just for you. Get started today!</p>
           
-          <form className="form">
+          <form className="form" onSubmit={handleSubmit(onSubmit)}>
             <div className="form__input-row">
-              <input className="form__input" placeholder="First Name" type="text" />
+              <input 
+                className="form__input" 
+                placeholder="Last Name" type="text"
+                name="firstName"
+                ref={register({ required: true })}
+              />
+              {errors.password && errors.password.type === 'required' && 
+                <p className="message message--error">This field is required</p>
+              }
             </div>
             
             <div className="form__input-row">
-              <input className="form__input" placeholder="Last Name" type="text" />
+              <input 
+                className="form__input" 
+                placeholder="Last Name" type="text"
+                name="lastName"
+                ref={register({ required: true })}
+              />
+              {errors.password && errors.password.type === 'required' && 
+                <p className="message message--error">This field is required</p>
+              }
             </div>
             
             <div className="form__input-row">
-              <input className="form__input" placeholder="Email" type="text" />
+              <input 
+                className="form__input" 
+                placeholder="email" 
+                type="text" 
+                name="email"
+                ref={register({
+                  required: true,
+                  pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                })}
+              />
+
+              {errors.email && errors.email.type === 'required' && 
+                <p className="message message--error">This field is required</p>
+              }
+
+              {errors.email && errors.email.type === 'pattern' && 
+                <p className="message message--error">Please write a valid email</p>
+              }
             </div>
             
             <div className="form__input-row">
-              <input className="form__input" type="Password" placeholder="Password" />
+              <input 
+                className="form__input" 
+                type="password" 
+                placeholder="Password" 
+                name="password"
+                ref={register({ required: true })}
+              />
+              {errors.password && errors.password.type === 'required' && 
+                <p className="message message--error">This field is required</p>
+              }
             </div>
 
             <div className="form__info">
@@ -42,7 +105,7 @@ const RegisterPage = () => (
               </div>
             </div>
 
-            <button type="button" className="btn btn--rounded btn--yellow btn-submit">Sign up</button>
+            <button type="submit" className="btn btn--rounded btn--yellow btn-submit">Sign up</button>
 
             <p className="form__signup-link">
               <Link href="/login">
@@ -54,8 +117,8 @@ const RegisterPage = () => (
 
       </div>
     </section>
-  </Layout>
-)
+  </Layout>);
+}
   
 export default RegisterPage
   

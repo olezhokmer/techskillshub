@@ -1,10 +1,18 @@
 import ProductsCarousel from './carousel';
-import useSwr from 'swr';
-import products from 'utils/data/products';
-
+import { useEffect, useState } from 'react';
+import { getProducts } from '../../utils/server';
 const ProductsFeatured = () => {
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data } = useSwr('/api/products', fetcher);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const updateProducts = async () => {
+      const products = await getProducts();
+
+      setProducts(products);
+    };
+
+    updateProducts();
+  }, []);
 
   return (
     <section className="section section-products-featured">

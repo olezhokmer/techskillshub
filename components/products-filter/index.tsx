@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Checkbox from './form-builder/checkbox';
 import Slider from 'rc-slider';
+import { getCategories } from 'utils/server';
+import { CategoryType } from 'types';
 
-// data
-import productsTypes from './../../utils/data/products-types';
 
 const { createSliderWithTooltip } = Slider;
 const Range = createSliderWithTooltip(Slider.Range);
@@ -11,8 +11,20 @@ const Range = createSliderWithTooltip(Slider.Range);
 const ProductsFilter = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
+  const [categories, setCategories] = useState([] as CategoryType[]);
+
+  useEffect(() => {
+    const updateCategories = async () => {
+      const categories = await getCategories();
+
+      setCategories(categories);
+    };
+
+    updateCategories();
+  }, []);
+
   const addQueryParams = () => {
-    // query params changes
+
   }
 
   return (
@@ -27,7 +39,7 @@ const ProductsFilter = () => {
         <div className="products-filter__block">
           <button type="button">Course type</button>
           <div className="products-filter__block__content">
-            {productsTypes.map(type => (
+            {categories.map(type => (
               <Checkbox 
                 key={type.id} 
                 name="product-type" 
@@ -40,7 +52,7 @@ const ProductsFilter = () => {
         <div className="products-filter__block">
           <button type="button">Price</button>
           <div className="products-filter__block__content">
-            <Range min={0} max={20} defaultValue={[3, 10]} tipFormatter={value => `${value}%`} />
+            <Range min={0} max={1000} defaultValue={[50, 300]} tipFormatter={value => `${value}$`} />
           </div>
         </div>
       </div>

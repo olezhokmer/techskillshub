@@ -27,9 +27,19 @@ export type ProductStoreType = {
   price: number;
 }
 
-export type GtagEventType = {
-  action: string;
-  category: string; 
-  label: string;
-  value: string
+export type CategoryType = {
+  id: string,
+  name: string,
+}
+
+export type UserType = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export type UserResponse = {
+  user: UserType;
+  token: string;
 }

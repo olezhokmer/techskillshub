@@ -1,22 +1,32 @@
-import useSwr from 'swr';
 import ProductItem from '../../product-item';
 import ProductsLoading from './loading';
 import { ProductTypeList } from 'types';
+import { useEffect, useState } from 'react';
+import { getProducts } from 'utils/server';
 
 const ProductsContent = () => {
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data, error } = useSwr('/api/products', fetcher);
+  const [products, setProducts] = useState([]);
+  const [productsLoaded, setProductsLoaded] = useState(false);
 
-  if (error) return <div>Failed to load users</div>;
+  useEffect(() => {
+    const updateProducts = async () => {
+      const products = await getProducts();
+
+      setProducts(products);
+      setProductsLoaded(true);
+    };
+
+    updateProducts();
+  }, []);
   return (
     <>
-      {!data && 
+      {!productsLoaded && 
         <ProductsLoading />
       }
 
-      {data &&
+      {productsLoaded &&
         <section className="products-list">
-          {data.map((item: ProductTypeList)  => (
+          {products.map((item: ProductTypeList)  => (
             <ProductItem 
               id={item.id} 
               name={item.name}
