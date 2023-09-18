@@ -1,25 +1,31 @@
 import CheckoutStatus from 'components/checkout-status';
-import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import { TransactionProduct } from 'types';
 import { getTransaction } from 'utils/server';
 import Layout from '../../layouts/Main';
 
-type TransactionPageType = {
-  products: TransactionProduct[];
-}
+const TransactionPage = () => {
+	const router = useRouter();
+  const [products, setProducts] = useState([] as TransactionProduct[]);
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-    const token = String(query.token);
-    const products = await getTransaction(token);
-  
-    return {
-      props: {
-        products,
-      },
+  useEffect(() => {
+    const { token } = router.query;
+
+    const fetchProducts = async () => {
+      const products = await getTransaction(String(token));
+
+      // @ts-ignore:next-line
+      setProducts(products);
+      return;
     }
-  }
+    
+    fetchProducts();
+  }, [router.query]);
 
-const TransactionPage = ({ products }: TransactionPageType) => {
+  if (!products) {
+    return <div>Loading...</div>;
+  }
   return (
     <Layout>
       <section className="cart">

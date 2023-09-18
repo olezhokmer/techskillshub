@@ -1,31 +1,37 @@
-import { GetServerSideProps } from 'next'
 import Footer from '../../components/footer';
 import Layout from '../../layouts/Main';
 import Breadcrumb from '../../components/breadcrumb';
 import ProductsFeatured from '../../components/products-featured';
 import Gallery from '../../components/product-single/gallery';
 import Content from '../../components/product-single/content';
-import { getProductById } from '../../utils/server'; 
-
-// types
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { getProductById } from 'utils/server';
 import { ProductType } from 'types';
 
-type ProductPageType = {
-  product: ProductType;
-}
+const Product = () => {
+  const router = useRouter();
+  const [product, setProduct] = useState();
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  const pid = String(query.pid);
-  const product = await getProductById(pid);
+  useEffect(() => {
+    const { pid } = router.query;
 
-  return {
-    props: {
-      product,
-    },
+    const fetchProduct = async () => {
+      const product: ProductType = await getProductById(String(pid));
+
+      // @ts-ignore:next-line
+      setProduct(product);
+      return;
+    }
+    
+    fetchProduct();
+  }, [router.query]);
+
+  if (!product) {
+    return <div>Loading...</div>;
   }
-}
 
-const Product = ({ product }: ProductPageType) => {
+
   return (
     <Layout>
       <Breadcrumb />
@@ -33,7 +39,7 @@ const Product = ({ product }: ProductPageType) => {
       <section className="product-single">
         <div className="container">
           <div className="product-single__content">
-            <Gallery images={product.images} />
+            <Gallery images={(product as ProductType).images} />
             <Content product={product} />
           </div>
 
