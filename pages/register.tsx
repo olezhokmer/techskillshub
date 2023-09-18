@@ -26,14 +26,17 @@ const RegisterPage = () => {
       const errorMessage = res?.errorMessage;
 
       if (errorMessage) {
-        return toast.error(errorMessage);
+        toast.error(errorMessage);
+        return ;
       }
     } catch (error) {
       // @ts-ignore:next-line
-      return toast.error(error?.errorMessage);
+      toast.error(error?.errorMessage);
+      return ;
     }
     loginUser(res);
     router.push('/products');
+    return ;
   };
 
   return (

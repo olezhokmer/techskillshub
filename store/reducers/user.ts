@@ -3,13 +3,6 @@ import { remove } from 'lodash';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { UserResponse, UserType } from 'types';
 
-type ProductType = {
-  id: string;
-  name: string;
-  thumb: string;
-  price: string;
-}
-
 type ToggleFavType = {
   id: string;
 }
