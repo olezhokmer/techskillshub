@@ -1,6 +1,6 @@
 import { CategoryType, TransactionProduct, UserResponse } from "types";
 
-export const server = 'http://localhost:3020';
+export const server = '/api';
 
 export async function getProducts(
   categories?: string[],
