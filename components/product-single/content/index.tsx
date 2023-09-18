@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { some } from 'lodash';
 import { addProduct, removeProduct } from 'store/reducers/cart';
